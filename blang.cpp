@@ -29,12 +29,42 @@ bool readAndParseFile(std::vector<std::string>& v, std::string inputFileName) {
     // Temporary string to store the part being read
     std::string part;
 
-    // Parse file contents by semicolons 
-    while (std::getline(ss, part, ';')) { // Reads from ss, stopping at ';'
-        v.push_back(part); // Stores the part before ';' in a string in the vector
+    // Parse file contents by newlines 
+    while (std::getline(ss, part, '\n')) { // Reads from ss, stopping at a newline
+        v.push_back(part); // Stores the part before the newline in a string in the vector
     }
 
     // Function worked and nothing went wrong
+    return true;
+}
+
+bool runCommand(const std::string& command, int lineNumber) {
+    // Get the indexes of the open and closed parentheses
+    size_t openPos = command.find('('); // Assign an unsigned integer (used for indexes in C++) to the index where the open parentheses appears
+    size_t closePos = command.find(')'); // Same as above but for closing parentheses
+
+    // Validate the line's parentheses syntax
+    if (openPos==std::string::npos) { // If the value of the first parenthes is npos (used to indicate failure of string seeking)
+        std::cerr << "Error: Line " << lineNumber << " is missing an opening parentheses." << '\n';
+        return false;
+    } else if (closePos==std::string::npos) {
+        std::cerr << "Error: Line " << lineNumber << " is missing a closing parentheses." << '\n';
+        return false;
+    } else if (closePos<openPos) {
+        std::cerr << "Error: Line " << lineNumber << " contains an opening parentheses before a closing parentheses." << '\n';
+        return false;
+    }
+
+    // Validate a command (token) is given by checking the open parentheses is not the first char in the line
+    if (openPos==0) {
+        std::cerr << "Error: Line " << lineNumber << " doesn't contain a command before the opening parentheses." << '\n';
+        return false;
+    }
+
+    // Get the command token
+    std::string token = command.substr(0, openPos);
+
+    std::cout << "Debug: Command is to do the action of " << token << '\n';
     return true;
 }
 
@@ -56,9 +86,13 @@ int main(int argc, char* argv[]) { // Argument count, argument values (C string 
 
     // Use the result
     int commandCounter = 0; // Initialize counter
+    bool canRunLine;
     for (const auto& i : instructions) { // Loops over every part in the vector (without copying or modifying)
         commandCounter++; // Increment counter
-        std::cout << "Command #" << commandCounter << ") " << i << '\n'; // Fancy print the instruction
+        canRunLine = runCommand(i, commandCounter);
+        if (!canRunLine) {
+            return 1; // Fail
+        }
     }
 
     return 0; // Return success

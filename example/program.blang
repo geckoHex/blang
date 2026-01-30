@@ -1,2 +1,3 @@
-Hello World;
-This is a test of the blang scripting language;
+print()
+read()
+input()

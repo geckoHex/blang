@@ -14,5 +14,5 @@ Syntax:
 
 Compile and run the interpreter:
 
-1. g++ blang.cpp -o build/blang
+1. g++ src/main.cpp -o build/blang
 2. ./build/blang

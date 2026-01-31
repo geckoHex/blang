@@ -4,13 +4,15 @@
 #include <vector>   // Dynamic sized list
 #include <string>   // String
 
+#include "util/logger.h"
+
 bool readAndParseFile(std::vector<std::string>& v, std::string inputFileName) {
     // Open the file
     std::ifstream file(inputFileName);
 
     // Ensure the file was read
     if (!file) {
-        std::cerr << "Error: Failed to read input file." << '\n';
+        logError("Failed to read input file.");
         return false;
     }
 
@@ -45,36 +47,36 @@ bool runCommand(const std::string& command, int lineNumber) {
 
     // Validate the line's parentheses syntax
     if (openPos==std::string::npos) { // If the value of the first parenthes is npos (used to indicate failure of string seeking)
-        std::cerr << "Error: Line " << lineNumber << " is missing an opening parentheses." << '\n';
+        logError("Missing opening parentheses.", lineNumber);
         return false;
     } else if (closePos==std::string::npos) {
-        std::cerr << "Error: Line " << lineNumber << " is missing a closing parentheses." << '\n';
+        logError("Missing closing parentheses.", lineNumber);
         return false;
     } else if (closePos<openPos) {
-        std::cerr << "Error: Line " << lineNumber << " contains an opening parentheses before a closing parentheses." << '\n';
+        logError("Opening parentheses appears before closing parentheses.", lineNumber);
         return false;
     }
 
     // Validate a command (token) is given by checking the open parentheses is not the first char in the line
     if (openPos==0) {
-        std::cerr << "Error: Line " << lineNumber << " doesn't contain a command before the opening parentheses." << '\n';
+        logError("No command is given before the opening parentheses.", lineNumber);
         return false;
     }
 
     // Get the command token
     std::string token = command.substr(0, openPos);
 
-    std::cout << "Debug: Command is to do the action of " << token << '\n';
+    logDebug("Command is to do the action of " + token); 
     return true;
 }
 
 int main(int argc, char* argv[]) { // Argument count, argument values (C string array)
     // Check the correct number of arguments was provided
     if (argc==1) { // Only one argument provided (exec name)
-        std::cerr << "Error: No input file provided." << '\n';
+        logError("No input file is provided.");
         return 1;
     } else if (argc>2) { // Three or more arguments given (exec name, file name, other arg(s))
-        std::clog << "Warning: Multiple arguments provided. Dropping additional arguments." << '\n';
+        logWarning("Too many program arguments provided. Dropping additional arguments.");
     }
 
     // Read the input file & check success

@@ -3,7 +3,7 @@
 #include <string>   // String
 
 #include "util/logger.h"
-#include "io/filein.h"
+#include "io/file_in.h"
 
 bool runCommand(const std::string& command, int lineNumber) {
     // Get the indexes of the open and closed parentheses
